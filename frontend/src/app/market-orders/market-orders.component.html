@@ -1,0 +1,25 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">ItemGroupTypeId</th>
+            <th scope="col">Amount</th>
+            <th scope="col">UnitPriceSilver</th>
+            <th scope="col">Expires</th>
+            <th scope="col">LocationId</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let marketOrder of marketOrders">
+            <th scope="row">{{marketOrder.Id}}</th>
+            <td>
+                <img [src]="'https://render.albiononline.com/v1/item/' + marketOrder.ItemTypeId" class="img-thumbnail"
+                    [alt]="marketOrder.ItemGroupTypeId">
+                {{marketOrder.ItemGroupTypeId}}
+            </td>
+            <td>{{marketOrder.Amount}}</td>
+            <td>{{marketOrder.UnitPriceSilver}}</td>
+            <td>{{marketOrder.Expires}}</td>
+            <td>{{marketOrder.LocationId}}</td>
+        </tr>
+</table>
