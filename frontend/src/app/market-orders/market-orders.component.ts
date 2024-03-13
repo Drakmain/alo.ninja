@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, effect } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { MarketOrdersService } from '../market-orders.service';
 import { CommonModule } from '@angular/common';
 
