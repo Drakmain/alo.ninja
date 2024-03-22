@@ -1,0 +1,72 @@
+<div class="flex flex-col justify-center items-center gap-4 text-white m-4">
+  <div>
+    <p-table [value]="this.resourceNameLists[selectedResources]">
+      <ng-template pTemplate="header">
+        <tr class="hover:bg-sky-700">
+          <th>Tier</th>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Min Sell Price</th>
+        </tr>
+      </ng-template>
+      <ng-template let-i="rowIndex" let-item pTemplate="body">
+        <tr class="hover:bg-gray-100">
+          <th
+            [ngClass]="{'tier1': i === 0,'tier2': i === 1,'tier3': i === 2,'tier4': i === 3,'tier5': i === 4, 'tier6': i === 5, 'tier7': i === 6, 'tier8': i === 7}"
+            class="text-white" scope="row">{{ i + 1 }}
+          </th>
+          <td>
+            <img [alt]="item"
+                 [src]="'https://render.albiononline.com/v1/item/T' + (i + 1) + '_' + selectedResources.toUpperCase()"
+                 class="img-thumbnail" height="68" width="68">
+          </td>
+          <td>{{ item }}</td>
+          <td>
+            <div class="grid grid-cols-3 gap-1">
+              <ng-container *ngFor="let price of this.pricesList[i + 1]">
+                <p-tag *ngIf="price.city === 'Lymhurst'" [style]="{'background': '#535E10'}">
+                  {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Fort Sterling'" [style]="{'background': '#FFFFF1'}">
+                  <p class="text-black">{{ price.sell_price_min }}</p>
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Bridgewatch'" [style]="{'background': '#DD6A24'}">
+                  {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Martlock'" [style]="{'background': '#5B7490'}">
+                  {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Thetford'" [style]="{'background': '#5F315F'}">
+                  {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Caerleon'" [style]="{'background': 'red'}">
+                  {{ price.sell_price_min }}
+                </p-tag>
+                <!--
+                <p-tag *ngIf="price.city === 'Black Market'" [style]="{'background': 'black'}">
+                  {{ price.city }} {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Highland Cross'" [style]="{'background': '#088F8F'}">
+                  {{ price.city }} {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Arthurs Rest'" [style]="{'background': 'grey'}">
+                  {{ price.city }} {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === 'Merlyns Rest'" [style]="{'background': 'grey'}">
+                  {{ price.city }} {{ price.sell_price_min }}
+                </p-tag>
+                <p-tag *ngIf="price.city === '5003'" [style]="{'background': 'lightyellow'}">
+                  <p class="text-black">Brecilien Market {{ price.sell_price_min }}</p>
+                </p-tag>
+                <p-tag *ngIf="price.city === '1001' || price.city === '1000'" [style]="{'background': 'purple'}">
+                  {{ price.city }} {{ price.sell_price_min }}
+                </p-tag>
+                -->
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

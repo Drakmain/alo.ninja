@@ -1,31 +1,19 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-  <li [ngbNavItem]="1">
-    <button ngbNavLink>Market Orders</button>
-    <ng-template ngbNavContent>
-      <div class="container text-center">
-        <app-market-orders></app-market-orders>
-      </div>
+<div class="card">
+  <p-tabMenu (activeItemChange)="onActiveItemChange($event)" [activeItem]="activeItem" [model]="items"></p-tabMenu>
+</div>
 
-    </ng-template>
-  </li>
-  <li [ngbNavItem]="2">
-    <button ngbNavLink>Ressources Prrice</button>
-    <ng-template ngbNavContent>
-      <div class="container text-center">
-        <div class="row">
-          <div class="col">
-            <app-legend></app-legend>
-          </div>
-          <div class="col">
-            <app-legend></app-legend>
-          </div>
-          <div class="col">
-            Column
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </li>
-</ul>
+<ng-container *ngIf="activeItem?.label === 'Market Orders'; then marketOrders"></ng-container>
+<ng-container *ngIf="activeItem?.label === 'Market Prices'; then marketPrices"></ng-container>
+<ng-container *ngIf="activeItem?.label === 'Market History'; then marketHistory"></ng-container>
 
-<div [ngbNavOutlet]="nav"></div>
+<ng-template #marketPrices>
+  <app-market-prices></app-market-prices>
+</ng-template>
+
+<ng-template #marketOrders>
+  <app-market-orders></app-market-orders>
+</ng-template>
+
+<ng-template #marketHistory>
+  <app-market-history></app-market-history>
+</ng-template>

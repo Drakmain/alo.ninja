@@ -1,0 +1,21 @@
+<div>
+  <p-dropdown (onChange)="onDropdownItemChange($event)" [(ngModel)]="selectedResources" [options]="resourcesList"></p-dropdown>
+  <p-dropdown (onChange)="onDropdownTimeScaleChange($event)" [(ngModel)]="selectedTimeScale" [options]="timeScaleList"></p-dropdown>
+</div>
+<div class="flex flex-row gap-2 mx-4">
+  <div class="flex flex-1 flex-col gap-24 mx-4">
+    <h1>Resources</h1>
+    <div *ngFor="let city of citiesList">
+      {{ city }}
+      <p-chart #chart [data]="citiesPriceHistoryRes[city]" [options]="options" type="line"></p-chart>
+    </div>
+  </div>
+  <div class="flex flex-1 flex-col gap-24 mx-4">
+    <h1>Processed</h1>
+    <div *ngFor="let city of citiesList">
+      {{ city }}
+      <p-chart [data]="citiesPriceHistoryPro[city]" [options]="options" type="line"></p-chart>
+    </div>
+  </div>
+</div>
+

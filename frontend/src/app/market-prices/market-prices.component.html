@@ -1,0 +1,39 @@
+<div class="flex flex-row gap-8">
+  <div class="flex flex-col justify-center items-center">
+    <div>
+      <p-dropdown (onChange)="changeSplit($event)" [(ngModel)]="selectedResources"
+                  [options]="resourcesProList"></p-dropdown>
+    </div>
+    <div class="flex flex-row gap-8">
+      <app-legend></app-legend>
+      <app-legend></app-legend>
+    </div>
+
+  </div>
+  <div class="flex flex-col justify-center items-center">
+
+    <table>
+      <thead>
+      <tr>
+        <th>BuyCity</th>
+        <th>SellCity</th>
+        <th>Profit</th>
+        <th>Mat</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of arr">
+        <th>{{ item.BuyCity }}</th>
+        <td>{{ item.SellCity }}</td>
+        <td>{{ item.Profit }}</td>
+        <td>{{ item.Mat }}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Last fetched {{ this.date }}
+    </p>
+    <!--<p-button (click)="this.prices(selectedResources)" label="Prices"></p-button>-->
+  </div>
+</div>

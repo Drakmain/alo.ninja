@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, effect } from '@angular/core';
-import { MarketOrdersService } from '../market-orders.service';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
+import {MarketOrdersService} from "../market-orders.service";
+import {TableModule} from "primeng/table";
 
 interface MarketOrders {
   Id: number,
@@ -18,7 +19,7 @@ interface MarketOrders {
 @Component({
   selector: 'app-market-orders',
   standalone: true,
-  imports: [MarketOrdersComponent, CommonModule],
+  imports: [CommonModule, NgForOf, NgForOf, TableModule],
   templateUrl: './market-orders.component.html',
   styleUrl: './market-orders.component.css'
 })
