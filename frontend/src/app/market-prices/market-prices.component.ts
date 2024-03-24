@@ -48,8 +48,10 @@ export class MarketPricesComponent implements AfterViewInit {
     this.legendResComp.selectedResources = this.selectedResources.toString().split("/")[0] as keyof typeof this.resourceNameLists;
     this.legendProComp.selectedResources = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
 
-    await this.legendResComp.prices()
-    await this.legendProComp.prices()
+    await Promise.all([
+      this.legendProComp.prices(),
+      this.legendResComp.prices()
+    ]);
   }
 
   async changeSplit(changes: DropdownChangeEvent) {
@@ -63,8 +65,11 @@ export class MarketPricesComponent implements AfterViewInit {
     this.legendResComp.selectedResources = this.selectedResources.toString().split("/")[0] as keyof typeof this.resourceNameLists;
     this.legendProComp.selectedResources = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
 
-    await this.legendProComp.prices()
-    await this.legendResComp.prices()
+    await Promise.all([
+      this.legendProComp.prices(),
+      this.legendResComp.prices()
+    ]);
+
     console.log("legendResComp")
     console.log(this.legendResComp.selectedResources)
     console.log("legendProComp")

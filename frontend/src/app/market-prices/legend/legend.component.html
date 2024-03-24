@@ -6,7 +6,7 @@
           <th>Tier</th>
           <th>Image</th>
           <th>Name</th>
-          <th>Min Sell Price</th>
+          <th>Average</th>
         </tr>
       </ng-template>
       <ng-template let-i="rowIndex" let-item pTemplate="body">
@@ -22,27 +22,45 @@
           </td>
           <td>{{ item }}</td>
           <td>
-            <div class="grid grid-cols-3 gap-1">
+            <div class="grid justify-items-center grid-cols-3 gap-1">
               <ng-container *ngFor="let price of this.pricesList[i + 1]">
-                <p-tag *ngIf="price.city === 'Lymhurst'" [style]="{'background': '#535E10'}">
-                  {{ price.sell_price_min }}
+                <p-tag *ngIf="price.city === 'Lymhurst'" [pTooltip]="tooltipCity"
+                       [style]="{'background': '#535E10'}">
+                  {{ price.avg.toFixed(2) }}
                 </p-tag>
-                <p-tag *ngIf="price.city === 'Fort Sterling'" [style]="{'background': '#FFFFF1'}">
-                  <p class="text-black">{{ price.sell_price_min }}</p>
+                <p-tag *ngIf="price.city === 'Fort Sterling' " [pTooltip]="tooltipCity"
+                       [style]="{'background': '#E7DCCF'}">
+                  <p class="text-black">{{ price.avg.toFixed(2) }}</p>
                 </p-tag>
-                <p-tag *ngIf="price.city === 'Bridgewatch'" [style]="{'background': '#DD6A24'}">
-                  {{ price.sell_price_min }}
+                <p-tag *ngIf="price.city === 'Bridgewatch'" [pTooltip]="tooltipCity"
+                       [style]="{'background': '#DD6A24'}">
+                  {{ price.avg.toFixed(2) }}
                 </p-tag>
-                <p-tag *ngIf="price.city === 'Martlock'" [style]="{'background': '#5B7490'}">
-                  {{ price.sell_price_min }}
+                <p-tag *ngIf="price.city === 'Martlock'" [pTooltip]="tooltipCity"
+                       [style]="{'background': '#5B7490'}">
+                  {{ price.avg.toFixed(2) }}
                 </p-tag>
-                <p-tag *ngIf="price.city === 'Thetford'" [style]="{'background': '#5F315F'}">
-                  {{ price.sell_price_min }}
+                <p-tag *ngIf="price.city === 'Thetford'" [pTooltip]="tooltipCity"
+                       [style]="{'background': '#5F315F'}">
+                  {{ price.avg.toFixed(2) }}
                 </p-tag>
-                <p-tag *ngIf="price.city === 'Caerleon'" [style]="{'background': 'red'}">
-                  {{ price.sell_price_min }}
-                </p-tag>
+
+                <ng-template #tooltipCity>
+                  <div class="flex flex-col">
+                    <div class="flex flex-row">
+                      <img class="mr-2" height="29"
+                           ngSrc="assets/Character_Flag_{{ price.city.split(' ').join('_') }}.png" width="15"/>
+                      <p>{{ price.city }} </p>
+                    </div>
+                    <p> Nombre : {{ price.totalWeight }} </p>
+                    <p> Min price : {{ price.sell_price_min }} </p>
+                    <p> Max price : {{ price.sell_price_max }} </p>
+                  </div>
+                </ng-template>
                 <!--
+                <p-tag *ngIf="price.city === 'Caerleon'" [style]="{'background': 'red'}" pTooltip="{{ price.city }}" tooltipPosition="bottom">
+                  {{ price.sell_price_min }}
+                </p-tag>
                 <p-tag *ngIf="price.city === 'Black Market'" [style]="{'background': 'black'}">
                   {{ price.city }} {{ price.sell_price_min }}
                 </p-tag>

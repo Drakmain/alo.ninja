@@ -1,60 +1,30 @@
 import {connect} from "nats";
-import {createServer} from "http";
-import {Server} from "socket.io";
 import {MongoClient} from "mongodb";
-import express from 'express';
 import dotenv from 'dotenv';
 
 dotenv.config()
 
 /* --- Init Var --- */
 
-const port = process.env.PORT
-const host = process.env.HOST
 const mongoURI = process.env.MONGOURI
 
 /* ---------------- */
 
-/* --- Init Express --- */
-
-const app = express();
-const httpServer = createServer(app);
-
-/* -------------------- */
-
 /* --- Init MongoDB --- */
 
 const client = new MongoClient(mongoURI);
-client.connect()
+await client.connect()
 const aloDB = client.db("alo");
 
 /* -------------------- */
 
-/* --- Init Socket IO --- */
-
-const io = new Server(httpServer, {
-    cors: {
-        origin: "*", methods: ["GET", "POST"]
-    }
-});
-
-io.on("connection", (socket) => {
-    console.log("Connection from " + socket.id)
-});
-
-/* ----------------------- */
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
-httpServer.listen(port, () => {
-    console.log(`Server running at http://${host}${port}`);
-});
+/* --- Nats --- */
 
 (async () => {
 
     const marketOrdersCollection = aloDB.collection("marketOrders")
+
+    await marketOrdersCollection.createIndex({"expireAt": 1}, {expireAfterSeconds: 0});
 
     const nc = await connect({
         servers: "nats.albion-online-data.com:4222", user: "public", pass: "thenewalbiondata",
@@ -65,9 +35,13 @@ httpServer.listen(port, () => {
     (async () => {
         for await (const msg of subscription) {
             console.log(`Received message: ${msg.data}`);
-            io.emit("newMarketOrders", msg.string())
+            //io.emit("newMarketOrders", msg.string())
 
             let object = msg.json()
+
+            object.expireAt = new Date(object.Expires)
+
+            delete object.Expires
 
             delete object.Id
 

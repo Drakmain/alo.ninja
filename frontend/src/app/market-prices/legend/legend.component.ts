@@ -1,5 +1,5 @@
-import {CommonModule, NgClass, NgIf} from '@angular/common';
-import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {CommonModule, NgClass, NgIf, NgOptimizedImage} from '@angular/common';
+import {Component, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {FormsModule} from '@angular/forms';
@@ -7,8 +7,9 @@ import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
 import {TagModule} from "primeng/tag";
 import {DropdownModule} from "primeng/dropdown";
+import { TooltipModule } from 'primeng/tooltip';
 
-export interface PricesList {
+export interface PricesListOld {
   item_id: string
   city: string
   quality: number
@@ -22,10 +23,20 @@ export interface PricesList {
   buy_price_max_date: string
 }
 
+export interface PricesList {
+  item_id: string
+  city: string
+  avg: number
+  totalWeight: number
+  sell_price_min: number
+  sell_price_max: number
+}
+
+
 @Component({
   selector: 'app-legend',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgClass, NgIf, NgClass, TableModule, ButtonModule, TagModule, DropdownModule],
+  imports: [CommonModule, FormsModule, NgClass, NgIf, NgClass, TableModule, ButtonModule, TagModule, DropdownModule, TooltipModule, NgOptimizedImage],
   templateUrl: './legend.component.html',
   styleUrl: './legend.component.css'
 })
@@ -76,18 +87,22 @@ export class LegendComponent {
     let data: PricesList[] = []
 
     try {
-      data = await firstValueFrom(this.http.get<PricesList[]>(`https://west.albion-online-data.com/api/v2/stats/prices/${reqString}`));
+      //data = await firstValueFrom(this.http.get<PricesList[]>(`https://west.albion-online-data.com/api/v2/stats/prices/${reqString}`));
+      data = await firstValueFrom(this.http.get<PricesList[]>(`http://127.0.0.1:3909/getPrices?item=${key.toUpperCase()}`));
     } catch (error) {
       console.error('Failed to fetch prices:', error);
       return;
     }
 
     data.forEach(value => {
+
       const tier: number = Number(value.item_id.charAt(1))
 
       if (this.pricesList[tier] === undefined) {
         this.pricesList[tier] = []
       }
+
+      value.city = value.city.replace(" Market", "")
 
       this.pricesList[tier].push(value)
 
@@ -96,7 +111,7 @@ export class LegendComponent {
   }
 
   compareByPrice(a: PricesList, b: PricesList) {
-    return a.sell_price_min - b.sell_price_min;
+    return a.avg - b.avg;
   }
 }
 
