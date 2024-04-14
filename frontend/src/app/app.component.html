@@ -5,6 +5,8 @@
 <ng-container *ngIf="activeItem?.label === 'Market Orders'; then marketOrders"></ng-container>
 <ng-container *ngIf="activeItem?.label === 'Market Prices'; then marketPrices"></ng-container>
 <ng-container *ngIf="activeItem?.label === 'Market History'; then marketHistory"></ng-container>
+<ng-container *ngIf="activeItem?.label === 'Items List'; then itemsList"></ng-container>
+<ng-container *ngIf="activeItem?.label === 'Calc Farm/Pasture'; then calcFarmPasture"></ng-container>
 
 <ng-template #marketPrices>
   <app-market-prices></app-market-prices>
@@ -16,4 +18,12 @@
 
 <ng-template #marketHistory>
   <app-market-history></app-market-history>
+</ng-template>
+
+<ng-template #itemsList>
+  <app-items-list></app-items-list>
+</ng-template>
+
+<ng-template #calcFarmPasture>
+  <app-calc-farm-pasture></app-calc-farm-pasture>
 </ng-template>

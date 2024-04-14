@@ -1,0 +1,232 @@
+<div class="flex flex-row justify-between m-4 gap-2">
+  <div class="grid grid-cols-3 items-center content-start gap-2">
+
+    <div *ngFor="let plot of plotList; let index = index" class="grid grid-cols-1 justify-items-stretch">
+      <p-card [styleClass]="getPlotStyleClass(plot)"
+              [style]="{ width: '44rem' }">
+        <b class="text-2xl text-white">{{ 'Plot ' + (index + 1) + ' : ' + plot }}</b>
+        <div class="grid grid-cols-3 gap-4 justify-items-stretch m-4">
+          <div *ngFor="let y of [1,2,3,4,5,6,7,8,9]; let yndex = index">
+
+            <!-- Farm -->
+            <p-dropdown *ngIf="plot === 'Farm'" [(ngModel)]="selectedPlots[index][yndex]"
+                        [options]="farmSeedList"
+                        [styleClass]="selectedPlots[index][yndex] ? selectedPlots[index][yndex].tier : ''"
+                        [style]="{width: '100%', height: '3.5rem', 'border-width': '0.2em'}"
+                        placeholder="Empty">
+              <ng-template let-plant pTemplate="selectedItem">
+                <div *ngIf="selectedPlots" class="flex align-items-center gap-4">
+                  <img [alt]="plant.name"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + plant.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p [ngClass]="{'text-black': plant.tier === 'tier8'}">{{ plant.name }}</p>
+                </div>
+              </ng-template>
+              <ng-template let-plant pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <img [alt]="plant.name"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + plant.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p>{{ plant.name }}</p>
+                </div>
+              </ng-template>
+            </p-dropdown>
+
+            <!-- Herb Garden -->
+            <p-dropdown *ngIf="plot === 'Herb Garden'" [(ngModel)]="selectedPlots[index][yndex]"
+                        [options]="gardenSeedList"
+                        [styleClass]="selectedPlots[index][yndex] ? selectedPlots[index][yndex].tier : ''"
+                        [style]="{width: '100%', height: '3.5rem', 'border-width': '0.2em'}"
+                        placeholder="Empty">
+              <ng-template let-herb pTemplate="selectedItem">
+                <div *ngIf="herb.name" class="flex align-items-center gap-2">
+                  <img [alt]="herb.name"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + herb.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+
+                  <p [ngClass]="{'text-black': herb.tier === 'tier8'}">{{ herb.name }}</p>
+                </div>
+              </ng-template>
+              <ng-template let-herb pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <img [alt]="herb.name"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + herb.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p>{{ herb.name }}</p>
+                </div>
+              </ng-template>
+            </p-dropdown>
+
+            <!-- Pasture -->
+            <p-dropdown *ngIf="plot === 'Pasture'" [(ngModel)]="selectedPlots[index][yndex]"
+                        [options]="pastureAnimalList"
+                        [styleClass]="selectedPlots[index][yndex] ? selectedPlots[index][yndex].tier : ''"
+                        [style]="{width: '100%', height: '3.5rem', 'border-width': '0.2em'}"
+                        placeholder="Empty">
+              <ng-template let-animal pTemplate="selectedItem">
+                <div *ngIf="selectedPlots" class="flex align-items-center">
+                  <img [alt]="selectedPlots[index][yndex]"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p [ngClass]="{'text-black': animal.tier === 'tier8'}">{{ animal.name }}</p>
+                </div>
+              </ng-template>
+              <ng-template let-animal pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <img [alt]="animal.uniqueName"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p>{{ animal.name }}</p>
+                </div>
+              </ng-template>
+            </p-dropdown>
+
+          </div>
+        </div>
+
+        <!-- Kennel -->
+
+        <div class="grid grid-cols-2 gap-2 justify-items-stretch m-4">
+          <div *ngFor="let y of [1,2,3,4]; let yndex = index">
+
+
+            <p-dropdown *ngIf="plot === 'Kennel'" [(ngModel)]="selectedPlots[index][yndex]"
+                        [options]="kennelAnimalList"
+                        [styleClass]="selectedPlots[index][yndex] ? selectedPlots[index][yndex].tier : ''"
+                        [style]="{width: '100%', height: '3.5rem', 'border-width': '0.2em'}"
+                        placeholder="Empty">
+              <ng-template let-animal pTemplate="selectedItem">
+                <div *ngIf="selectedPlots" class="flex align-items-center gap-2">
+                  <img [alt]="selectedPlots[index][yndex]"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p [ngClass]="{'text-black': animal.tier === 'tier8'}">{{ animal.name }}</p>
+                </div>
+              </ng-template>
+              <ng-template let-animal pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                  <img [alt]="animal.uniqueName"
+                       [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+                       class="img-thumbnail" height="30" width="30">
+                  <p>{{ animal.name }}</p>
+                </div>
+              </ng-template>
+            </p-dropdown>
+
+          </div>
+
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Add Plot -->
+
+    <div class="flex flex-col gap-4 items-center">
+      <p class="text-2xl">Add a new plot</p>
+      <p-button (onClick)="addPlot('Farm')" [styleClass]="'tier1'" label="Farm"></p-button>
+      <p-button (onClick)="addPlot('Herb Garden')" [styleClass]="'tier2'" label="Herb Garden"></p-button>
+      <p-button (onClick)="addPlot('Pasture')" [styleClass]="'tier3'" label="Pasture"></p-button>
+      <p-button (onClick)="addPlot('Kennel')" [styleClass]="'tier4'" label="Kennel"></p-button>
+    </div>
+  </div>
+
+  <!-- Side Panel -->
+  <div class="flex flex-col gap-1">
+
+    <h2 class="text-3xl">Destiny Board</h2>
+
+    <!-- Crop Farmer -->
+    <p-panel [toggleable]="true" header="Crop Farmer">
+      <div class="flex flex-col">
+        <label for="cropFarmerLVL">Crop Farmer</label>
+        <p-inputNumber [(ngModel)]="cropFarmerLVL" [max]="100" [min]="0" id="cropFarmerLVL"></p-inputNumber>
+      </div>
+    </p-panel>
+
+    <!-- Herbalist -->
+    <p-panel [toggleable]="true" header="Herbalist">
+      <div class="flex flex-col">
+        <label for="herbalistLVL">Herbalist</label>
+        <p-inputNumber [(ngModel)]="herbalistLVL" [max]="100" [min]="0" id="herbalistLVL"></p-inputNumber>
+      </div>
+    </p-panel>
+
+    <!-- Animal Breeder -->
+    <p-panel [toggleable]="true" header="Animal Breeder">
+      <div class="flex flex-col">
+        <label for="animalBreederLVL">Animal Breeder</label>
+        <p-inputNumber [(ngModel)]="animalBreederLVL" [max]="100" [min]="0" id="animalBreederLVL"></p-inputNumber>
+      </div>
+    </p-panel>
+
+    <!-- Chef -->
+    <p-panel [toggleable]="true" header="Chef">
+      <div class="flex flex-col">
+        <label for="chefLVL">Chef</label>
+        <p-inputNumber [(ngModel)]="chefLVL" [max]="100" [min]="0" id="chefLVL"></p-inputNumber>
+      </div>
+    </p-panel>
+
+    <!-- Alchemist -->
+    <p-panel [toggleable]="true" header="Chef">
+      <div class="flex flex-col">
+        <label for="alchemistLVL">Chef</label>
+        <p-inputNumber [(ngModel)]="alchemistLVL" [max]="100" [min]="0" id="alchemistLVL"></p-inputNumber>
+      </div>
+    </p-panel>
+
+    <!-- Summary -->
+
+    <p-panel [toggleable]="true" header="Summary Farm :">
+      <div *ngFor="let seed of farmSeedList">
+        <div *ngIf="countElem(selectedPlots,seed) !== 0" class="flex flex-row">
+          <img [alt]="seed"
+               [ngSrc]="'https://render.albiononline.com/v1/item/' + seed.uniqueName"
+               class="img-thumbnail" height="30" width="30">
+          <p>{{ countElem(selectedPlots, seed) }} : Min={{ countElem(selectedPlots, seed) * 6 }},
+            Avg={{ countElem(selectedPlots, seed) * 10 }}, Max={{ countElem(selectedPlots, seed) * 12 }}</p>
+        </div>
+      </div>
+    </p-panel>
+
+    <p-panel [toggleable]="true" header="Summary Garden :">
+      <div *ngFor="let seed of gardenSeedList">
+        <div *ngIf="countElem(selectedPlots,seed) !== 0" class="flex flex-row">
+          <img [alt]="seed"
+               [ngSrc]="'https://render.albiononline.com/v1/item/' + seed.uniqueName"
+               class="img-thumbnail" height="30" width="30">
+          <p>{{ countElem(selectedPlots, seed) }} : Min={{ countElem(selectedPlots, seed) * 6 }},
+            Avg={{ countElem(selectedPlots, seed) * 10 }}, Max={{ countElem(selectedPlots, seed) * 12 }}</p>
+        </div>
+      </div>
+    </p-panel>
+
+    <p-panel [toggleable]="true" header="Summary Pasture :">
+      <div *ngFor="let animal of pastureAnimalList">
+        <div *ngIf="countElem(selectedPlots,animal) !== 0" class="flex flex-row">
+          <img [alt]="animal.name"
+               [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+               class="img-thumbnail" height="30" width="30">
+          <p>Need {{ countElem(selectedPlots, animal) * animal.food }} {{ animal.foodType }} </p>
+        </div>
+      </div>
+    </p-panel>
+
+    <p-panel [toggleable]="true" header="Summary Kennel :">
+      <div *ngFor="let animal of kennelAnimalList">
+        <div *ngIf="countElem(selectedPlots,animal) !== 0" class="flex flex-row">
+          <img [alt]="animal.name"
+               [ngSrc]="'https://render.albiononline.com/v1/item/' + animal.uniqueName"
+               class="img-thumbnail" height="30" width="30">
+          <p>Need {{ countElem(selectedPlots, animal) * animal.food }} {{ animal.foodType }} </p>
+        </div>
+      </div>
+    </p-panel>
+
+  </div>
+
+</div>
+
+
+
+

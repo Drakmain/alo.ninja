@@ -1,11 +1,12 @@
-import {Component, inject, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {ChartModule, UIChart, } from "primeng/chart";
+import {Component, inject, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {ChartModule, UIChart,} from "primeng/chart";
 import {firstValueFrom} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {ButtonModule} from "primeng/button";
 import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {NgForOf} from "@angular/common";
+import {MarketInfosService} from "../market-infos.service";
 
 export interface LocationHistory {
   data: Data
@@ -50,29 +51,18 @@ interface CitiesPriceHistory {
 })
 export class MarketHistoryComponent implements OnInit {
 
-  selectedTimeScale = 1
+  private marketInfos = inject(MarketInfosService)
+
+  resourceNameLists = this.marketInfos.resourceNameLists
+
+  resourcesCombList = this.marketInfos.resourcesCombList
 
   timeScaleList = [1, 24]
+  selectedTimeScale = this.timeScaleList[1]
 
   selectedResources = "Wood/Planks"
 
-  resourcesList = ["Wood/Planks", "Rock/StoneBlock", "Hide/Leather", "Ore/MetalBar", "Fiber/Cloth"]
-
-  resourceNameLists = {
-    Wood: ["Rough Logs", "Birch Logs", "Chestnut Logs", "Pine Logs", "Cedar Logs", "Bloodoak Logs", "Ashenbark Logs", "Whitewood Logs"],
-    Rock: ["Rough Stone", "Limestone", "Sandstone", "Travertine", "Granite", "Slate", "Basalt", "Marble"],
-    Hide: ["Scraps of Hide", "Rugged Hide", "Thin Hide", "Medium Hide", "Heavy Hide", "Robust Hide", "Thick Hide", "Resilient Hide"],
-    Ore: ["", "Copper Ore", "Tin Ore", "Iron Ore", "Titanium Ore", "Runite Ore", "Meteorite Ore", "Adamantium Ore"],
-    Fiber: ["", "Cotton", "Flax", "Hemp", "Skyflower", "Amberleaf Cotton", "Sunflax", "Ghost Hemp"],
-
-    Planks: ["", "Birch Planks", "Chestnut Planks", "Pine Planks", "Cedar Planks", "Bloodoak Planks", "Ashenbark Planks", "Whitewood Planks"],
-    StoneBlock: ["", "Limestone Block", "Sandstone Block", "Travertine Block", "Granite Block", "Slate Block", "Basalt Block", "Marble Block"],
-    Leather: ["", "Stiff Leather", "Thick Leather", "Worked Leather", "Cured Leather", "Hardened Leather", "Reinforced Leather", "Fortified Leather"],
-    Metal: ["", "Copper Bat", "Bronze Bar", "Steel Bar", "Titanium Steel Bar", "Runite Steel Bar", "Meteorite Steel Bar", "Adamantium Steel Bar"],
-    Cloth: ["", "Simple Cloth", "Neat Cloth", "Fine Cloth", "Ornate Cloth", "Lavish Cloth", "Opulent Cloth", "Baroque Cloth"]
-  };
-
-  citiesList = ["Thetford", "Fort Sterling", "Lymhurst", "Bridgewatch", "Martlock", "Caerleon", "Brecilien"]
+  citiesList = this.marketInfos.citiesList
 
   citiesPriceHistoryRes: CitiesPriceHistory = {
     'Thetford': {datasets: []},
@@ -144,7 +134,7 @@ export class MarketHistoryComponent implements OnInit {
     }
   }
 
-  async getData(key: "Hide" | "Planks" | "Rock" | "Ore" | "Wood" | "Fiber" | "StoneBlock" | "Cloth" | "Leather" | "Metal", citiesPriceHistory: CitiesPriceHistory) {
+  async getData(key: "Hide" | "Planks" | "Rock" | "Ore" | "Wood" | "Fiber" | "StoneBlock" | "Cloth" | "Leather" | "MetalBar", citiesPriceHistory: CitiesPriceHistory) {
 
     if (this.resourceNameLists[key] === undefined) {
       console.error('Item name does not match any resource list.');
@@ -213,7 +203,7 @@ export class MarketHistoryComponent implements OnInit {
     }
   }
 
-  async onDropdownTimeScaleChange($event: DropdownChangeEvent){
+  async onDropdownTimeScaleChange($event: DropdownChangeEvent) {
     this.selectedTimeScale = $event.value
 
     this.citiesPriceHistoryRes = {
@@ -240,9 +230,7 @@ export class MarketHistoryComponent implements OnInit {
 
     let pro = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
 
-    await this.getData(res, this.citiesPriceHistoryRes)
-
-    await this.getData(pro, this.citiesPriceHistoryPro)
+    await Promise.all([this.getData(res, this.citiesPriceHistoryRes), this.getData(pro, this.citiesPriceHistoryPro)]);
 
     this.charts.forEach((chartInstance, index) => {
       chartInstance.refresh()
@@ -276,9 +264,7 @@ export class MarketHistoryComponent implements OnInit {
 
     let pro = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
 
-    await this.getData(res, this.citiesPriceHistoryRes)
-
-    await this.getData(pro, this.citiesPriceHistoryPro)
+    await Promise.all([this.getData(res, this.citiesPriceHistoryRes), this.getData(pro, this.citiesPriceHistoryPro)]);
 
     this.charts.forEach((chartInstance, index) => {
       chartInstance.refresh()

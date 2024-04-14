@@ -1,0 +1,66 @@
+<div class="flex flex-row gap-8">
+
+  <p-tieredMenu [model]="itemsList"></p-tieredMenu>
+
+  <div class="grid grid-cols-6 gap-4">
+
+    <p-card (click)="oue()" *ngFor="let item of this.marketInfos.selectedItem">
+      <div *ngIf="item.LocalizedNames !== null || item.LocalizedDescriptions !== null" class="flex flex-col items-center">
+
+        <div class="flex flex-row items-center">
+          <img [ngSrc]="'https://render.albiononline.com/v1/item/' + item._id" alt="Card" height="64" width="64"/>
+          <h3 class="text-lg">{{ item.LocalizedNames?.["EN-US"] }}</h3>
+        </div>
+
+        <div class="grid justify-items-center grid-cols-3 gap-1">
+          <ng-container *ngFor="let price of this.pricesList[item._id]">
+            <p-tag *ngIf="price.city === 'Lymhurst'" [pTooltip]="tooltipCity"
+                   [style]="{'background': '#535E10'}">
+              {{ price.avg.toFixed(2) }}
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Fort Sterling' " [pTooltip]="tooltipCity"
+                   [style]="{'background': '#E7DCCF'}">
+              <p class="text-black">{{ price.avg.toFixed(2) }}</p>
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Bridgewatch'" [pTooltip]="tooltipCity"
+                   [style]="{'background': '#DD6A24'}">
+              {{ price.avg.toFixed(2) }}
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Martlock'" [pTooltip]="tooltipCity"
+                   [style]="{'background': '#5B7490'}">
+              {{ price.avg.toFixed(2) }}
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Thetford'" [pTooltip]="tooltipCity"
+                   [style]="{'background': '#5F315F'}">
+              {{ price.avg.toFixed(2) }}
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Caerleon'" [pTooltip]="tooltipCity"
+                   [style]="{'background': 'red'}">
+              {{ price.sell_price_min }}
+            </p-tag>
+            <p-tag *ngIf="price.city === 'Brecilien'" [pTooltip]="tooltipCity"
+                   [style]="{'background': 'black'}">
+              {{ price.sell_price_min }}
+            </p-tag>
+
+            <ng-template #tooltipCity>
+              <div class="flex flex-col">
+                <div class="flex flex-row items-center">
+                  <img class="mr-2" height="29"
+                       ngSrc="assets/Character_Flag_{{ price.city.split(' ').join('_') }}.png" width="15"/>
+                  <p>{{ price.cityLong }} </p>
+                </div>
+                <p> Nombre : {{ price.totalWeight }} </p>
+                <p> Min price : {{ price.sell_price_min }} </p>
+                <p> Max price : {{ price.sell_price_max }} </p>
+                <p> Last order : {{ price.lastTime }} </p>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </p-card>
+
+  </div>
+
+</div>

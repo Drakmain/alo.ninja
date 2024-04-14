@@ -7,7 +7,9 @@ import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
 import {TagModule} from "primeng/tag";
 import {DropdownModule} from "primeng/dropdown";
-import { TooltipModule } from 'primeng/tooltip';
+import {TooltipModule} from 'primeng/tooltip';
+import {MarketInfosService} from "../../market-infos.service";
+import {SkeletonModule} from "primeng/skeleton";
 
 export interface PricesListOld {
   item_id: string
@@ -24,46 +26,41 @@ export interface PricesListOld {
 }
 
 export interface PricesList {
+  cityLong: string;
   item_id: string
   city: string
   avg: number
   totalWeight: number
   sell_price_min: number
   sell_price_max: number
+  lastTime: number | string,
 }
 
 
 @Component({
   selector: 'app-legend',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgClass, NgIf, NgClass, TableModule, ButtonModule, TagModule, DropdownModule, TooltipModule, NgOptimizedImage],
+  imports: [CommonModule, FormsModule, NgClass, NgIf, NgClass, TableModule, ButtonModule, TagModule, DropdownModule, TooltipModule, NgOptimizedImage, SkeletonModule],
   templateUrl: './legend.component.html',
-  styleUrl: './legend.component.css'
+  styleUrl: './legend.component.scss'
 })
 export class LegendComponent {
 
-  resourceNameLists = {
-    Wood: ["Rough Logs", "Birch Logs", "Chestnut Logs", "Pine Logs", "Cedar Logs", "Bloodoak Logs", "Ashenbark Logs", "Whitewood Logs"],
-    Rock: ["Rough Stone", "Limestone", "Sandstone", "Travertine", "Granite", "Slate", "Basalt", "Marble"],
-    Hide: ["Scraps of Hide", "Rugged Hide", "Thin Hide", "Medium Hide", "Heavy Hide", "Robust Hide", "Thick Hide", "Resilient Hide"],
-    Ore: ["", "Copper Ore", "Tin Ore", "Iron Ore", "Titanium Ore", "Runite Ore", "Meteorite Ore", "Adamantium Ore"],
-    Fiber: ["", "Cotton", "Flax", "Hemp", "Skyflower", "Amberleaf Cotton", "Sunflax", "Ghost Hemp"],
+  private http = inject(HttpClient)
+  private marketInfos = inject(MarketInfosService)
 
-    Planks: ["", "Birch Planks", "Chestnut Planks", "Pine Planks", "Cedar Planks", "Bloodoak Planks", "Ashenbark Planks", "Whitewood Planks"],
-    StoneBlock: ["", "Limestone Block", "Sandstone Block", "Travertine Block", "Granite Block", "Slate Block", "Basalt Block", "Marble Block"],
-    Leather: ["", "Stiff Leather", "Thick Leather", "Worked Leather", "Cured Leather", "Hardened Leather", "Reinforced Leather", "Fortified Leather"],
-    MetalBar: ["", "Copper Bat", "Bronze Bar", "Steel Bar", "Titanium Steel Bar", "Runite Steel Bar", "Meteorite Steel Bar", "Adamantium Steel Bar"],
-    Cloth: ["", "Simple Cloth", "Neat Cloth", "Fine Cloth", "Ornate Cloth", "Lavish Cloth", "Opulent Cloth", "Baroque Cloth"]
-  };
+  resourceNameLists = this.marketInfos.resourceNameLists
 
   selectedResources = '' as keyof typeof this.resourceNameLists;
+
+  selectedItemLevel !: string;
 
   //selectedResources: keyof typeof this.resourceNameLists = "Wood"
   pricesList: PricesList[][] = []
   cols = [{field: 'city', header: 'city'}, {field: 'quality', header: 'quality'}, {
     field: 'sell_price_min', header: 'sell_price_min'
   }];
-  private http = inject(HttpClient)
+
 
   async prices() {
 
@@ -76,23 +73,30 @@ export class LegendComponent {
       return;
     }
 
+    /*
     let reqString = ""
 
     for (let index = 0; index < this.resourceNameLists[key].length; index++) {
       if (this.resourceNameLists[key][index] !== "") {
-        reqString += `T${index + 1}_${this.selectedResources.toUpperCase()},`
+
+        reqString += `T${index + 1}_${this.selectedResources.toUpperCase()}_${},`
       }
     }
+    */
 
     let data: PricesList[] = []
 
+    console.log(`http://127.0.0.1:3909/getPrices?item=${key.toUpperCase()}&level=${this.selectedItemLevel}`)
+
     try {
       //data = await firstValueFrom(this.http.get<PricesList[]>(`https://west.albion-online-data.com/api/v2/stats/prices/${reqString}`));
-      data = await firstValueFrom(this.http.get<PricesList[]>(`http://127.0.0.1:3909/getPrices?item=${key.toUpperCase()}`));
+      data = await firstValueFrom(this.http.get<PricesList[]>(`http://127.0.0.1:3909/getResourcesPrices?item=${key.toUpperCase()}&level=${this.selectedItemLevel}`));
     } catch (error) {
       console.error('Failed to fetch prices:', error);
       return;
     }
+
+    console.log(data)
 
     data.forEach(value => {
 
@@ -102,7 +106,10 @@ export class LegendComponent {
         this.pricesList[tier] = []
       }
 
+      value.cityLong = value.city
       value.city = value.city.replace(" Market", "")
+
+      value.lastTime = new Date(value.lastTime).toLocaleString()
 
       this.pricesList[tier].push(value)
 
@@ -113,5 +120,7 @@ export class LegendComponent {
   compareByPrice(a: PricesList, b: PricesList) {
     return a.avg - b.avg;
   }
+
+  protected readonly Date = Date;
 }
 

@@ -1,62 +1,76 @@
-import {AfterViewInit, Component, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, inject, QueryList, ViewChildren} from '@angular/core';
 import {LegendComponent, PricesList} from "./legend/legend.component";
 import {ButtonModule} from "primeng/button";
-import {DropdownChangeEvent, DropdownModule} from "primeng/dropdown";
+import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
-import {NgForOf} from "@angular/common";
+import {NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
+import {TableModule} from "primeng/table";
+import {MarketInfosService} from "../market-infos.service";
+import {SkeletonModule} from "primeng/skeleton";
+import {MultiSelectModule} from "primeng/multiselect";
+import {TagModule} from "primeng/tag";
+import {TooltipModule} from "primeng/tooltip";
+import {PanelMenuModule} from "primeng/panelmenu";
+import {MenubarModule} from "primeng/menubar";
+
 
 @Component({
   selector: 'app-market-prices',
   standalone: true,
-  imports: [LegendComponent, LegendComponent, ButtonModule, DropdownModule, FormsModule, NgForOf],
+  imports: [LegendComponent, LegendComponent, ButtonModule, DropdownModule, FormsModule, NgForOf, TableModule, NgStyle, NgClass, NgIf, SkeletonModule, MultiSelectModule, NgOptimizedImage, TagModule, TooltipModule, PanelMenuModule, MenubarModule],
   templateUrl: './market-prices.component.html',
   styleUrl: './market-prices.component.scss'
 })
 export class MarketPricesComponent implements AfterViewInit {
 
-  @ViewChildren(LegendComponent) legendComponents!: QueryList<LegendComponent>;
+  private marketInfos = inject(MarketInfosService)
 
+  @ViewChildren(LegendComponent) legendComponents!: QueryList<LegendComponent>;
   legendResComp !: LegendComponent;
   legendProComp !: LegendComponent;
+
   date !: Date
   tab: Array<PricesList[][]> = []
-  selectedResources: string = "Wood/Planks"
-  resourcesProList = ["Wood/Planks", "Rock/StoneBlock", "Hide/Leather", "Ore/MetalBar", "Fiber/Cloth"]
-  resourceNameLists = {
-    Wood: ["Rough Logs", "Birch Logs", "Chestnut Logs", "Pine Logs", "Cedar Logs", "Bloodoak Logs", "Ashenbark Logs", "Whitewood Logs"],
-    Rock: ["Rough Stone", "Limestone", "Sandstone", "Travertine", "Granite", "Slate", "Basalt", "Marble"],
-    Hide: ["Scraps of Hide", "Rugged Hide", "Thin Hide", "Medium Hide", "Heavy Hide", "Robust Hide", "Thick Hide", "Resilient Hide"],
-    Ore: ["", "Copper Ore", "Tin Ore", "Iron Ore", "Titanium Ore", "Runite Ore", "Meteorite Ore", "Adamantium Ore"],
-    Fiber: ["", "Cotton", "Flax", "Hemp", "Skyflower", "Amberleaf Cotton", "Sunflax", "Ghost Hemp"],
 
-    Planks: ["", "Birch Planks", "Chestnut Planks", "Pine Planks", "Cedar Planks", "Bloodoak Planks", "Ashenbark Planks", "Whitewood Planks"],
-    StoneBlock: ["", "Limestone Block", "Sandstone Block", "Travertine Block", "Granite Block", "Slate Block", "Basalt Block", "Marble Block"],
-    Leather: ["", "Stiff Leather", "Thick Leather", "Worked Leather", "Cured Leather", "Hardened Leather", "Reinforced Leather", "Fortified Leather"],
-    MetalBar: ["", "Copper Bat", "Bronze Bar", "Steel Bar", "Titanium Steel Bar", "Runite Steel Bar", "Meteorite Steel Bar", "Adamantium Steel Bar"],
-    Cloth: ["", "Simple Cloth", "Neat Cloth", "Fine Cloth", "Ornate Cloth", "Lavish Cloth", "Opulent Cloth", "Baroque Cloth"]
-  };
+  resourcesProList = this.marketInfos.resourcesCombList
+  selectedResources: string = this.resourcesProList[0]
 
-  arr : Array<{BuyCity : string, SellCity : string, Profit: Number, Mat: string}> = []
+  itemLevel = this.marketInfos.itemLevel
+  selectedItemLevel = this.itemLevel[0]
+
+  citiesList = this.marketInfos.citiesList
+  selectedCities = ["Thetford", "Fort Sterling", "Lymhurst", "Bridgewatch", "Martlock"]
+
+  itemsList = this.marketInfos.itemsList;
+
+  resourceNameLists = this.marketInfos.resourceNameLists
+
+  products = Array.from({length: 9}).map((_, i) => `Item #${i}`);
+
+  craftCostList: Array<{
+    BuyCity: string,
+    SellCity: string,
+    Profit: number,
+    MatRes: string,
+    MatPro: string,
+    SellCityPrice: number,
+    BuyCityPrice0: number,
+    BuyCityPrice1: number
+  }> = []
+
+  async onCitiesSelect() {
+    console.log(this.selectedCities)
+    await this.changeSplit()
+  }
 
   async ngAfterViewInit() {
+
+    console.log("ngAfterViewInit")
 
     const [legendComponent1, legendComponent2] = this.legendComponents.toArray();
 
     this.legendResComp = legendComponent1
     this.legendProComp = legendComponent2
-
-    this.legendResComp.selectedResources = this.selectedResources.toString().split("/")[0] as keyof typeof this.resourceNameLists;
-    this.legendProComp.selectedResources = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
-
-    await Promise.all([
-      this.legendProComp.prices(),
-      this.legendResComp.prices()
-    ]);
-  }
-
-  async changeSplit(changes: DropdownChangeEvent) {
-
-    this.arr = []
 
     console.log("selectedResources " + this.selectedResources)
     console.log("Res = " + this.selectedResources.toString().split("/")[0] as keyof typeof this.resourceNameLists)
@@ -65,57 +79,79 @@ export class MarketPricesComponent implements AfterViewInit {
     this.legendResComp.selectedResources = this.selectedResources.toString().split("/")[0] as keyof typeof this.resourceNameLists;
     this.legendProComp.selectedResources = this.selectedResources.toString().split("/")[1] as keyof typeof this.resourceNameLists;
 
-    await Promise.all([
-      this.legendProComp.prices(),
-      this.legendResComp.prices()
-    ]);
+    this.legendResComp.selectedItemLevel = this.selectedItemLevel
+    this.legendProComp.selectedItemLevel = this.selectedItemLevel
+
+    await Promise.all([this.legendProComp.prices(), this.legendResComp.prices()]);
+
+    await this.changeSplit()
+  }
+
+  async changeSplit() {
+
+    this.craftCostList = []
 
     console.log("legendResComp")
     console.log(this.legendResComp.selectedResources)
     console.log("legendProComp")
     console.log(this.legendProComp.selectedResources)
 
-    let citiesList = ["Thetford", "Fort Sterling", "Lymhurst", "Bridgewatch", "Martlock", "Caerleon", "Brecilien"]
-
     for (let i = 2; i < this.legendResComp.pricesList.length - 1; i++) {
+
+      if (this.legendProComp.pricesList[i] === undefined || this.legendResComp.pricesList[i + 1] === undefined) continue;
+
+      this.legendProComp.pricesList[i] = this.legendProComp.pricesList[i].filter(value => this.selectedCities.includes(value.city));
+      this.legendResComp.pricesList[i + 1] = this.legendResComp.pricesList[i + 1].filter(value => this.selectedCities.includes(value.city));
+
+      if (this.legendProComp.pricesList[i] === undefined || this.legendResComp.pricesList[i + 1] === undefined) continue;
 
       console.log("0000000000000000000000000000000");
       console.log("Tier " + i);
       console.log("0000000000000000000000000000000");
 
-      const proPrices = this.legendProComp.pricesList[i].filter(value => citiesList.includes(value.city));
-      const resPrices = this.legendResComp.pricesList[i + 1].filter(value => citiesList.includes(value.city));
-
-      for (let y = 0; y < proPrices.length; y++) {
-        if (proPrices[y].sell_price_min === 0 || resPrices[y].sell_price_min === 0) continue;
+      for (let y = 0; y < this.legendProComp.pricesList[i].length; y++) {
+        if (this.legendProComp.pricesList[i][y] === undefined || this.legendResComp.pricesList[i + 1][y] === undefined) continue;
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        console.log("City Buy: " + proPrices[y].city);
+        console.log("City Buy: " + this.legendProComp.pricesList[i][y].city);
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
-        console.log("Pro Tier " + i + ": " + proPrices[y].sell_price_min);
-        console.log("Res Tier " + (i + 1) + ": " + resPrices[y].sell_price_min);
+        console.log("Pro Tier " + i + ": " + this.legendProComp.pricesList[i][y].sell_price_min);
+        console.log("Res Tier " + (i + 1) + ": " + this.legendResComp.pricesList[i + 1][y].sell_price_min);
 
-        let buyPrice = proPrices[y].sell_price_min + resPrices[y].sell_price_min;
+        let buyPrice = this.legendProComp.pricesList[i][y].sell_price_min + this.legendResComp.pricesList[i + 1][y].sell_price_min * 2;
 
         console.log("-----------------------------");
 
         for (let k = 0; k < this.legendProComp.pricesList[i + 1].length; k++) {
 
+          if (!this.selectedCities.includes(this.legendProComp.pricesList[i + 1][k].city)) continue;
+
           if (this.legendProComp.pricesList[i + 1][k].sell_price_min === 0) continue;
 
           let profit = this.legendProComp.pricesList[i + 1][k].sell_price_min - buyPrice;
+
           console.log("City : " + this.legendProComp.pricesList[i + 1][k].city);
           console.log("City Sell Price: " + this.legendProComp.pricesList[i + 1][k].sell_price_min);
           console.log("Profit: " + profit);
-          this.arr.push({BuyCity: proPrices[y].city, SellCity: this.legendProComp.pricesList[i + 1][k].city, Profit: profit, Mat: this.legendProComp.pricesList[i + 1][k].item_id})
+
+          this.craftCostList.push({
+            BuyCity: this.legendProComp.pricesList[i][y].city,
+            BuyCityPrice0: this.legendResComp.pricesList[i + 1][y].sell_price_min,
+            BuyCityPrice1: this.legendProComp.pricesList[i][y].sell_price_min,
+            SellCity: this.legendProComp.pricesList[i + 1][k].city,
+            SellCityPrice: this.legendProComp.pricesList[i + 1][k].sell_price_min,
+            Profit: profit,
+            MatPro: this.legendProComp.pricesList[i + 1][k].item_id.split('_')[0],
+            MatRes: this.legendProComp.pricesList[i][y].item_id.split('_')[0]
+          })
           console.log("-----------------------------");
         }
       }
     }
 
-    this.arr = this.arr.sort((a, b) => (a > b ? -1 : 1));
-    console.log(this.arr)
+    this.craftCostList = this.craftCostList.sort((a, b) => (a.Profit > b.Profit ? -1 : 1));
+    console.log(this.craftCostList)
   }
 
 }

@@ -1,39 +1,145 @@
-<div class="flex flex-row gap-8">
-  <div class="flex flex-col justify-center items-center">
-    <div>
-      <p-dropdown (onChange)="changeSplit($event)" [(ngModel)]="selectedResources"
-                  [options]="resourcesProList"></p-dropdown>
-    </div>
-    <div class="flex flex-row gap-8">
-      <app-legend></app-legend>
-      <app-legend></app-legend>
-    </div>
+<div class="flex flex-col justify-center items-center">
+
+  <div class="flex flex-row gap-2">
+
+    <p-dropdown (onChange)="ngAfterViewInit()" [(ngModel)]="selectedResources"
+                [options]="resourcesProList" class="my-4"></p-dropdown>
+
+    <p-dropdown (onChange)="ngAfterViewInit()" [(ngModel)]="selectedItemLevel"
+                [options]="itemLevel" class="my-4"></p-dropdown>
+
+    <p-multiSelect (onChange)="onCitiesSelect()" [(ngModel)]="selectedCities" [options]="citiesList" class="my-4">
+      <ng-template let-cities pTemplate="selectedItems">
+        <div>{{ cities }}</div>
+        <div *ngIf="!cities || cities.length === 0">Select Countries</div>
+      </ng-template>
+      <ng-template let-cites pTemplate="item">
+        <div class="flex align-items-center gap-2">
+          <img alt="Character_Flag_{{ cites.split(' ').join('_') }}" class="mr-2"
+               height="29" ngSrc="assets/Character_Flag_{{ cites.split(' ').join('_') }}.png"
+               width="15"/>
+          <div>{{ cites }}</div>
+        </div>
+      </ng-template>
+    </p-multiSelect>
 
   </div>
-  <div class="flex flex-col justify-center items-center">
 
-    <table>
-      <thead>
-      <tr>
-        <th>BuyCity</th>
-        <th>SellCity</th>
-        <th>Profit</th>
-        <th>Mat</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let item of arr">
-        <th>{{ item.BuyCity }}</th>
-        <td>{{ item.SellCity }}</td>
-        <td>{{ item.Profit }}</td>
-        <td>{{ item.Mat }}</td>
-      </tr>
-      </tbody>
-    </table>
+  <div class="flex flex-row gap-8">
 
-    <p>
-      Last fetched {{ this.date }}
-    </p>
-    <!--<p-button (click)="this.prices(selectedResources)" label="Prices"></p-button>-->
+    <app-legend></app-legend>
+    <app-legend></app-legend>
+
+    <div *ngIf="this.craftCostList.length === 0">
+      <p-table [scrollable]="true" [tableStyle]="{ 'min-width': '40rem' }" [value]="products" scrollHeight="800px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>BuyCity</th>
+            <th>SellCity</th>
+            <th>Profit</th>
+            <th>Mat</th>
+          </tr>
+        </ng-template>
+        <ng-template let-product pTemplate="body">
+          <tr>
+            <td>
+              <p-skeleton height="2rem" width="8rem"></p-skeleton>
+            </td>
+            <td>
+              <p-skeleton height="2rem" width="8rem"></p-skeleton>
+            </td>
+            <td>
+              <p-skeleton height="2rem" width="8rem"></p-skeleton>
+            </td>
+            <td>
+              <p-skeleton height="2rem" width="8rem"></p-skeleton>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div *ngIf="this.craftCostList.length > 0">
+      <p-table [scrollable]="true" [tableStyle]="{ 'min-width': '40rem' }" [value]="craftCostList" scrollHeight="800px">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="flex align-items-center">
+              BuyCity
+              <p-columnFilter display="menu" field="BuyCity" type="text"></p-columnFilter>
+            </th>
+            <th>SellCity</th>
+            <th pSortableColumn="Profit" style="width:20%">
+              Profit
+              <p-sortIcon field="Profit"></p-sortIcon>
+            </th>
+            <th>Mat</th>
+          </tr>
+        </ng-template>
+        <ng-template let-product pTemplate="body">
+          <tr>
+            <td *ngIf="product.BuyCity === 'Thetford'" [style]="{'background': '#5F315F'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Martlock'" [style]="{'background': '#5B7490'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Bridgewatch'" [style]="{'background': '#DD6A24'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Fort Sterling'" [style]="{'background': '#E7DCCF'}"
+                class="text-black">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Lymhurst'" [style]="{'background': '#535E10'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Caerleon'" [style]="{'background': '#271912'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Brecilien'" [style]="{'background': '#524384'}"
+                class="text-white">{{ product.BuyCity }}
+            </td>
+            <td *ngIf="product.BuyCity === 'Merlyn\'s Rest'">{{ product.BuyCity }}</td>
+
+            <td *ngIf="product.SellCity === 'Thetford'" [style]="{'background': '#5F315F'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Martlock'" [style]="{'background': '#5B7490'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Bridgewatch'" [style]="{'background': '#DD6A24'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Fort Sterling'" [style]="{'background': '#E7DCCF'}"
+                class="text-black">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Lymhurst'" [style]="{'background': '#535E10'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Caerleon'" [style]="{'background': '#271912'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Brecilien'" [style]="{'background': '#524384'}"
+                class="text-white">{{ product.SellCity }}
+            </td>
+            <td *ngIf="product.SellCity === 'Merlyn\'s Rest'">{{ product.SellCity }}</td>
+            <td *ngIf="product.SellCity === 'Arthur\'s Rest'">{{ product.SellCity }}</td>
+
+            <td [pTooltip]="tooltipCity" tooltipPosition="top">
+              {{ product.Profit }}
+            </td>
+
+            <ng-template #tooltipCity>
+              {{ product.BuyCity }} {{ product.MatRes }} : {{ product.BuyCityPrice0 }}
+              {{ product.BuyCity }} {{ product.MatPro }} : {{ product.BuyCityPrice1 }}
+              <br>
+              {{ product.SellCity }} : {{ product.SellCityPrice }}
+            </ng-template>
+
+            <td>{{ product.MatPro }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
 </div>
+
